@@ -15,6 +15,6 @@ HandleFrame(frame);
 function HandleFrame(frame) {
     if (frame.hands.length == 1) {
         var hand = frame.hands[0];
-        //HandleHand(hand);
+        HandleHand(hand);
     }
 }
