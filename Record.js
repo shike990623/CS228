@@ -10,9 +10,10 @@ var twoHands;
 
 
 Leap.loop(controllerOptions, function(frame){
+        currentNumHands = frame.hands.length;
     clear();
     HandleFrame(frame);
-        currentNumHands = frame.hands.length;
+        RecordData();
         //console.log("Prev: " + previousNumHands + " -- Curr: " + currentNumHands);
         previousNumHands = currentNumHands;
 }
@@ -126,4 +127,9 @@ function TransformCoordinates(x,y) {
     return [x,y];
 }
 
+function RecordData(){
+    if (previousNumHands == 2 && currentNumHands == 1) {
+        background(0);
+    }
+}
 
