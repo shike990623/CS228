@@ -1,163 +1,151 @@
-
-//Global Variables
 var controllerOptions = {};
-var rawXMin = -10; //-300
-var rawXMax = 20; //200
-var rawYMin = -10; //-400, -300
-var rawYMax = 20; //30
+nj.config.printThreshold = 1000;
+var x = window.innerWidth / 2;
+var y = window.innerHeight / 2;
+var z = 0;
+// Bone Vars
+var xt = window.innerWidth / 2;
+var yt = window.innerHeight / 2;
+var zt = 0;
+var xb = window.innerWidth / 2;
+var yb = window.innerHeight / 2;
+var zb = 0;
 var previousNumHands = 0;
 var currentNumHands = 0;
+var moreThanOneHand;
+var numSamples = 2;
+var currentSample = 0;
+var framesOfData = nj.zeros([5, 4, 6, numSamples]);
+Leap.loop(controllerOptions, function(frame)
+    {
+        currentNumHands = frame.hands.length;
+        clear();
+        HandleFrame(frame);
+        RecordData();
+        previousNumHands = currentNumHands;
+    }
+);
 
-var oneFrameOfData = nj.zeros([6,5,4]); //6 stacks of 5x4 matrices
-
-//Infinite Loop to catch each frame
-Leap.loop(controllerOptions, function(frame){
-    currentNumHands = frame.hands.length;
-
-    clear();
-    HandleFrame(frame);
-    RecordData();
-
-    previousNumHands = currentNumHands;
-});
-
-//Handles a single frame
 function HandleFrame(frame) {
-    //console.log(frame.hands.length);
-    //No hand - variables undefine
-    if(frame.hands.length == 1 || frame.hands.length == 2){
-        //Grabs 1st hand per frame
+    var interactionBox = frame.interactionBox;
+    if (frame.hands.length == 1){
+        moreThanOneHand = false;
         var hand = frame.hands[0];
-        HandleHand(hand,1);
-        if(frame.hands.length == 2){
-            //Grabs 2nd hand per frame
-            //var hand = frame.hands[1];
-            HandleHand(hand,2);
-        }
+        HandleHand(hand, moreThanOneHand, interactionBox);
+    } else if (frame.hands.length > 1) {
+        moreThanOneHand = true;
+        var hand = frame.hands[0];
+        HandleHand(hand, moreThanOneHand, interactionBox);
+    } else {
+        moreThanOneHand = false;
     }
 }
-
-//Handles a single hand
-function HandleHand(hand, numHand) {
-    //Grabs fingers
+function HandleHand(hand, moreThanOneHand, interactionBox) {
     var fingers = hand.fingers;
-    //Draws all five finger bones(1-4) at a time
+    for (var i = 3; i >= 0; i -= 1) {     // For each bone
+        for (var j = 4; j >= 0; j -= 1) {   // For each finger
 
-    //Distal phalanges are bones.type = 3
-    var l = 3;
-
-    //We know there are 4 bones in each finger
-    for (var j=0; j<4; j++){
-        //All five bones of a type at a time
-        for(var k=0; k<fingers.length; k++){
-            //Gets all bones of a finger
-            var bones = fingers[k].bones;
-            //Draws finger w/ finger index i --holds the value of the current finger
-            HandleBone(bones[l], k);
+            HandleBone(fingers[j].bones[i], fingers[j].bones[i].type, j, moreThanOneHand, interactionBox);
         }
-        l--;
     }
 }
 
-//Handles a single bone
-function HandleBone(bone, fingerIndex){
-    //Capture the x, y, and z coordinates the tip of each bone
-    var tipPosition = bone.nextJoint;
-    var tipX = tipPosition[0];
-    var tipY = tipPosition[1];
-    var tipZ = tipPosition[2];
+function HandleBone(bone, boneType, fingerIndex, moreThanOneHand, interactionBox) {
+    var normalizedPrevJoint = interactionBox.normalizePoint(bone.prevJoint, true);
+    var normalizedNextJoint = interactionBox.normalizePoint(bone.nextJoint, true);
 
-    //Capture the x, y, and z coordinates the base of each bone
-    var basePosition = bone.prevJoint;
-    var baseX = basePosition[0];
-    var baseY = basePosition[1];
-    var baseZ = basePosition[2];
+    // xt = bone.nextJoint[0];
+    // yt = bone.nextJoint[1];
+    // zt = bone.nextJoint[2];
+    //
+    // xb = bone.prevJoint[0];
+    // yb = bone.prevJoint[1];
+    // zb = bone.prevJoint[2];
 
-    //Transform the bone positions into canvas positions.
-    var newTipPosition = TransformCoordinates(tipX,tipZ-tipY);
-    var newBasePostion = TransformCoordinates(baseX,baseZ-baseY);
+    xt = normalizedNextJoint[0];
+    yt = normalizedNextJoint[1];
+    zt = normalizedNextJoint[2];
 
-    //Del3 Step21 Sum all 6 coordinates together after they have been transformed
-    // var transformedXPosition = TransformCoordinates(tipX, baseX);
-    // var transformedYPosition = TransformCoordinates(tipY, baseY);
-    var transformedZPosition = TransformCoordinates(tipZ, baseZ);
-    var sum = newTipPosition[0] + newTipPosition[1] + newBasePostion[0] + newBasePostion[1] + transformedZPosition[0] + transformedZPosition[1]
+    xb = normalizedPrevJoint[0];
+    yb = normalizedPrevJoint[1];
+    zb = normalizedPrevJoint[2];
 
-    oneFrameOfData.set(0,fingerIndex, bone.type, newBasePostion[0]);
-    oneFrameOfData.set(1,fingerIndex, bone.type, newBasePostion[1]);
-    oneFrameOfData.set(2,fingerIndex, bone.type, transformedZPosition[1]);
-    oneFrameOfData.set(3,fingerIndex, bone.type, newTipPosition[0]);
-    oneFrameOfData.set(4,fingerIndex, bone.type, newTipPosition[1]);
-    oneFrameOfData.set(5,fingerIndex, bone.type, transformedZPosition[0]);
 
-    //Determine strokeWeight
-    if (bone.type == 0){
-        strokeWeight(6);
-        if (currentNumHands == 1){
-            stroke('rgb(0,210,0)');
+    // console.log("Normalized Prev Joint: " + normalizedPrevJoint);
+    // console.log("Normalized Next Joint: " + normalizedNextJoint);
+
+    framesOfData.set(fingerIndex, boneType, 0, currentSample, xb);
+    framesOfData.set(fingerIndex, boneType, 1, currentSample, yb);
+    framesOfData.set(fingerIndex, boneType, 2, currentSample, zb);
+    framesOfData.set(fingerIndex, boneType, 3, currentSample, xt);
+    framesOfData.set(fingerIndex, boneType, 4, currentSample, yt);
+    framesOfData.set(fingerIndex, boneType, 5, currentSample, zt);
+
+
+    var canvasPrevX = window.innerWidth * normalizedPrevJoint[0];
+    var canvasPrevY = window.innerHeight * (1 - normalizedPrevJoint[1]);
+
+    var canvasNextX = window.innerWidth * normalizedNextJoint[0];
+    var canvasNextY = window.innerHeight * (1 - normalizedNextJoint[1]);
+
+    // console.log(oneFrameOfData);
+    if (moreThanOneHand) {
+        if (boneType == 0) {
+            strokeWeight(8*3);
+            // stroke(20);
+            stroke(255,0,0);
+        } else if (boneType == 1) {
+            strokeWeight(6*3);
+            // stroke(60);
+            stroke(207,0,0);
+        } else if (boneType == 2) {
+            strokeWeight(4*3);
+            // stroke(80);
+            stroke(158,0,0);
         } else {
-            stroke('rgb(210,0,0)');
-        }
-
-    } else if (bone.type == 1){
-        strokeWeight(4);
-        if (currentNumHands == 1){
-            stroke('rgb(0,153,0)');
-        } else {
-            stroke('rgb(153,0,0)');
-        }
-    } else if (bone.type == 2){
-        strokeWeight(2);
-        if (currentNumHands == 1){
-            stroke('rgb(0,75,0)');
-        } else {
-            stroke('rgb(75,0,0)');
+            strokeWeight(2*3);
+            // stroke(100);
+            stroke(115,0,0);
         }
     } else {
-        strokeWeight(1);
-        if (currentNumHands == 1){
-            stroke('rgb(0,51,0)');
+        if (boneType == 0) {
+            strokeWeight(8*3);
+            // stroke(20);
+            stroke(0,255,0);
+        } else if (boneType == 1) {
+            strokeWeight(6*3);
+            // stroke(60);
+            stroke(0,207,0);
+        } else if (boneType == 2) {
+            strokeWeight(4*3);
+            // stroke(80);
+            stroke(0,158,0);
         } else {
-            stroke('rgb(51,0,0)');
+            strokeWeight(2*3);
+            // stroke(100);
+            stroke(0,115,0);
         }
     }
-    //Draw lines
-    line(newTipPosition[0], newTipPosition[1], newBasePostion[0], newBasePostion[1]);
-
-    //we’ll store the coordinates in the vector inside this function.
+    line(canvasNextX, canvasNextY, canvasPrevX, canvasPrevY, zt, zb);
 }
 
-//Translate the positions into canvas positions.
-//MAKE SURE Y = Z-Y
-function TransformCoordinates(x,y) {
-    //Check min & max
-    if(x < rawXMin){
-        rawXMin = x;
-        //-364.348
-    }
-    if(y < rawYMin){
-        rawYMin = y;
-        //-631.54
-    }
-    if(x > rawXMax){
-        rawXMax = x;
-        //217.779
-    }
-    if(y > rawYMax){
-        rawYMax = y;
-        //59.44879999999999
+function RecordData() {
+    if (previousNumHands == 1 && currentNumHands == 2) {
+        currentSample++;
+
+        if (currentSample >= numSamples) {
+            currentSample = 0;
+        }
     }
 
-    x = ((x-rawXMin)*(window.innerWidth-0))/(rawXMax-rawXMin);
-    y = ((y-rawYMin)*(window.innerHeight-0))/(rawYMax-rawYMin);
-    return [x,y];
-}
+    if (previousNumHands == 2 && currentNumHands == 1) {
+        background(0)
+        // console.log(framesOfData.pick(null, null, null, currentSample).toString());
+        // console.log(framesOfData.pick(null, null, null, 0).toString());
+       // console.log(framesOfData.pick(null, null, null, 1).toString());
+        console.log(framesOfData.toString());
 
-function RecordData(){
-    if (previousNumHands == 2 && currentNumHands == 1){
-        background('#222222');
-        console.log(oneFrameOfData.toString());
+        //console.log(currentSample);
     }
 }
-
 
