@@ -13,7 +13,7 @@ var zb = 0;
 var previousNumHands = 0;
 var currentNumHands = 0;
 var moreThanOneHand;
-var numSamples = 2;
+var numSamples = 100;
 var currentSample = 0;
 var framesOfData = nj.zeros([5, 4, 6, numSamples]);
 Leap.loop(controllerOptions, function(frame)
@@ -54,13 +54,6 @@ function HandleBone(bone, boneType, fingerIndex, moreThanOneHand, interactionBox
     var normalizedPrevJoint = interactionBox.normalizePoint(bone.prevJoint, true);
     var normalizedNextJoint = interactionBox.normalizePoint(bone.nextJoint, true);
 
-    // xt = bone.nextJoint[0];
-    // yt = bone.nextJoint[1];
-    // zt = bone.nextJoint[2];
-    //
-    // xb = bone.prevJoint[0];
-    // yb = bone.prevJoint[1];
-    // zb = bone.prevJoint[2];
 
     xt = normalizedNextJoint[0];
     yt = normalizedNextJoint[1];
@@ -130,10 +123,9 @@ function HandleBone(bone, boneType, fingerIndex, moreThanOneHand, interactionBox
 }
 
 function RecordData() {
-    if (previousNumHands == 1 && currentNumHands == 2) {
-        currentSample++;
-
-        if (currentSample >= numSamples) {
+    if (currentNumHands == 2) {
+        currentSample += 1;
+        if (currentSample == numSamples) {
             currentSample = 0;
         }
     }
