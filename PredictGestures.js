@@ -21,85 +21,364 @@ var predictedClassLabels = nj.zeros(2);
 var n = 0;
 var m = 0;
 var d = 1;
+var programState = 0;
 
-Leap.loop(controllerOptions, function(frame){
+function compute_prediction_7(c,d){
+    n++
+    m = (((n-1)*m) + (c==d))/n
+    console.log(n,m,c)
+}
+function Test(){
+    var currentFeatures = oneFrameOfData
+    // CenterDataX()
+    // CenterDataY()
+    // CenterDataZ()
+    currentFeatures = currentFeatures.reshape(1,120)
+    predictLabel = knnClassifier.classify(currentFeatures.tolist(), GotResults);
+}
+
+function GotResults(err, result){
+    //compute_prediction_7(result.label,3);
+    console.log(result.label)
+}
+function CenterDataX(){
+    var xValues = oneFrameOfData.slice([],[],[0,6,3])
+    var currentMean = xValues.mean()
+    return currentMean
+
+}
+
+function CenterDataY(){
+    var yValues = oneFrameOfData.slice([],[],[1,6,3])
+    var currentMean = yValues.mean()
+    return currentMean
+
+
+}
+
+function CenterDataZ(){
+    var zValues = oneFrameOfData.slice([],[],[2,6,3])
+    var currentMean = zValues.mean()
+    console.log(currentMean)
+    return currentMean
+
+
+}
+
+
+
+function HandleFrame(frame){
     clear();
 
-    if (!trainingCompleted){
-        Train();
-
+    //one hand over the device
+    if(frame.hands.length >= 1){
+        // first element in the hands
+        var hand = frame.hands[0];
+        var interactionBox = frame.interactionBox;
+        HandleHand(hand,interactionBox);
     }
-    HandleFrame(frame);
+}
 
-    //DrawCircles();
-});
+function HandleHand(hand,interactionBox){
+    //fingers element
+    var fingers = hand.fingers;
+    //iterrate each finger
+    for(var n = 3; 0 <=n; --n){
+        for(var i=0; i <fingers.length; i++){
+            HandleFinger(fingers[i],n,i,interactionBox)
+        }
+    }
+}
+
+function HandleFinger(finger,n,fingerIndex,interactionBox){
+
+    HandleBone(finger.bones[n],n,fingerIndex,interactionBox);
+}
+
+
+function HandleBone(bone,type,fingerIndex,interactionBox){
+    var bone_start = bone.prevJoint;
+    var bone_end = bone.nextJoint;
+
+    var normalizedPrevJoint = interactionBox.normalizePoint(bone.prevJoint,true);
+    var normalizedNextJoint = interactionBox.normalizePoint(bone.nextJoint,true);
+
+    var x_start = normalizedPrevJoint[0];
+    var x_end =  normalizedNextJoint[0];
+
+    var y_start = normalizedPrevJoint[1];
+    var y_end = normalizedNextJoint[1];
+
+    var z_start = normalizedPrevJoint[2];
+    var z_end = normalizedNextJoint[2];
+
+
+    oneFrameOfData.set(fingerIndex,type,0,x_start);
+    oneFrameOfData.set(fingerIndex,type,1,y_start);
+    oneFrameOfData.set(fingerIndex,type,2,z_start);
+    oneFrameOfData.set(fingerIndex,type,3,x_end);
+    oneFrameOfData.set(fingerIndex,type,4,y_end);
+    oneFrameOfData.set(fingerIndex,type,5,z_end);
+
+
+    // Test()
+
+    var canvasXStart = (window.innerWidth * x_start) * 0.5;
+    var canvasXEnd = (window.innerWidth * x_end) * 0.5;
+    var canvasYStart = (window.innerHeight * (1-y_start)) * 0.5;
+    var canvasYEnd =  (window.innerHeight * (1-y_end)) * 0.5;
+
+    //line and line weight
+    switch(type){
+        case 0:
+            strokeWeight(20)
+            stroke(210)
+            break;
+        case 1:
+            strokeWeight(15)
+            stroke(120)
+            break;
+        case 2:
+            strokeWeight(10)
+            stroke(70)
+            break;
+        case 3:
+            strokeWeight(5)
+            stroke(10)
+            break;
+    }
+
+    line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
+
+}
+
+function DetermineState(frame){
+    if(frame.hands.length  == 0){
+        programState = 0
+    }
+    else{
+        HandleFrame(frame)
+        if(HandIsUncentered()){
+            programState = 1
+        }
+        else{
+            programState = 2
+        }
+    }
+}
+
+function HandIsUncentered(){
+
+    if(HandIsTooFarToTheLeft() || HandIsTooFarToTheRight() || HandIsTooFarToHigh() || HandIsTooFarToLow() || HandIsTooFar() || HandIsTooClose() ){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+
+function HandIsTooFarToTheLeft(){
+    if(CenterDataX() < 0.25 ){
+        image(arrowRight,window.innerWidth/2,0,window.innerWidth/2,window.innerHeight/2);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function HandIsTooFarToTheRight(){
+    if(CenterDataX() > 0.75 ){
+        image(arrowLeft, window.innerWidth/2,0,window.innerWidth/2,window.innerHeight/2);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function HandIsTooFarToHigh(){
+    if(CenterDataY() < 0.25 ){
+        image(arrowUp, window.innerWidth/2,0,window.innerWidth/2,window.innerHeight/2);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function HandIsTooFarToLow(){
+    if(CenterDataY() > 0.75 ){
+        image(arrowDown, window.innerWidth/2,0,window.innerWidth/2,window.innerHeight/2);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function HandIsTooClose(){
+    if(CenterDataZ() < 0.25 ){
+        image(arrowTowards,window.innerWidth/2,0,window.innerWidth/2,window.innerHeight/2);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function HandIsTooFar(){
+    if(CenterDataZ() > 0.75 ){
+        image(arrowAway, window.innerWidth/2,0,window.innerWidth/2,window.innerHeight/2);
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+function HandleState0(frame) {
+    TrainKNNIfNotDoneYet()
+    DrawImageToHelpUserPutTheirHandOverTheDevice()
+}
+function HandleState1(frame) {
+    //test
+}
+function HandleState2(frame) {
+    HandleFrame(frame);
+    //test
+}
+
+
+function DrawImageToHelpUserPutTheirHandOverTheDevice(){
+    image(img, 10, 10, window.innerWidth/2.2, window.innerHeight/2.2);
+}
+
+function TrainKNNIfNotDoneYet() {
+    if(trainingCompleted == false){
+        // Train();
+        trainingCompleted = true;
+    }
+}
+Leap.loop(controllerOptions, function(frame){
+    clear();
+    DetermineState(frame);
+    if(programState == 0){
+        HandleState0(frame)
+    }
+    else if (programState == 1){
+        HandleState1(frame)
+    }
+    else{
+        HandleState2(frame)
+    }
+    // clear();
+    // if(trainingCompleted == false){
+    //   // Train();
+    //   trainingCompleted = true;
+    // }
+
+    //currentNumbHands = frame.hands.length;
+    //HandleFrame(frame);
+    //previousNumHands = currentNumbHands;
+
+})
+
+
 
 function Train(){
     trainingCompleted = true;
 
     for (var i = 0; i < train0.shape[3]; i++) {
-        features = train0.pick(null,null,null,i);
-        features = features.reshape(120);
+        features0 = train0.pick(null,null,null,i);
+        features0 = features0.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features.tolist(), 0);
+        knnClassifier.addExample(features0.tolist(), 0);
     }
 
 
     for (var i = 0; i < train1.shape[3]; i++) {
-        features = train1.pick(null,null,null,i);
-        features = features.reshape(120);
+        features1 = train1.pick(null,null,null,i);
+        features1 = features1.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features.tolist(), 1);
+        knnClassifier.addExample(features1.tolist(), 1);
+    }
+
+    for (var i = 0; i < train1.shape[3]; i++) {
+        features1l = train1Li.pick(null,null,null,i);
+        features1l = features1l.reshape(120);
+        //console.log(features.toString());
+        knnClassifier.addExample(features1l.tolist(), 1);
+    }
+
+    for (var i = 0; i < train1.shape[3]; i++) {
+        features1b = train1Bongard.pick(null,null,null,i);
+        features1b = features1b.reshape(120);
+        //console.log(features.toString());
+        knnClassifier.addExample(features1b.tolist(), 1);
     }
 
     for (var i = 0; i < train2.shape[3]; i++) {
-        features = train2.pick(null,null,null,i);
-        features = features.reshape(120);
+        features2 = train2.pick(null,null,null,i);
+        features2 = features2.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features.tolist(), 2);
+        knnClassifier.addExample(features2.tolist(), 2);
     }
 
     for (var i = 0; i < train3.shape[3]; i++) {
-        features = train3.pick(null,null,null,i);
-        features = features.reshape(120);
+        features3 = train3.pick(null,null,null,i);
+        features3 = features3.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features.tolist(), 3);
+        knnClassifier.addExample(features3.tolist(), 3);
     }
 
     for (var i = 0; i < train4.shape[3]; i++) {
-        features = train4.pick(null,null,null,i);
-        features = features.reshape(120);
+        features4 = train4.pick(null,null,null,i);
+        features4 = features4.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features.tolist(), 4);
+        knnClassifier.addExample(features4.tolist(), 4);
     }
 
     for (var i = 0; i < train5.shape[3]; i++) {
-        features = train5.pick(null, null, null, i);
-        features = features.reshape(120);
-        knnClassifier.addExample(features.tolist(), 5);
+        features5 = train5.pick(null, null, null, i);
+        features5 = features5.reshape(120);
+        knnClassifier.addExample(features5.tolist(), 5);
     }
     for (var i = 0; i < train6.shape[3]; i++) {
-        features = train6.pick(null,null,null,i);
-        features = features.reshape(120);
-        knnClassifier.addExample(features.tolist(), 6);
+        features6 = train6.pick(null,null,null,i);
+        features6 = features6.reshape(120);
+        knnClassifier.addExample(features6.tolist(), 6);
     }
+
     for (var i = 0; i < train7.shape[3]; i++) {
-        features = train7.pick(null,null,null,i);
-        features = features.reshape(120);
-        knnClassifier.addExample(features.tolist(), 7);
+        features7 = train7.pick(null,null,null,i);
+        features7 = features7.reshape(120);
+        knnClassifier.addExample(features7.tolist(), 7);
+    }
+
+    for (var i = 0; i < train7.shape[3]; i++) {
+        feature7v = train7Vega.pick(null,null,null,i);
+        feature7v = feature7v.reshape(120);
+        knnClassifier.addExample(feature7v.tolist(), 7);
+    }
+
+    for (var i = 0; i < train7.shape[3]; i++) {
+        feature7f = train7Fisher.pick(null,null,null,i);
+        feature7f = feature7f.reshape(120);
+        knnClassifier.addExample(feature7f.tolist(), 7);
     }
 
     for (var i = 0; i < train8.shape[3]; i++) {
-        features = train8.pick(null,null,null,i);
-        features = features.reshape(120);
+        features8 = train8.pick(null,null,null,i);
+        features8 = features8.reshape(120);
 
-        knnClassifier.addExample(features.tolist(), 8);
+        knnClassifier.addExample(features8.tolist(), 8);
     }
 
     for (var i = 0; i < train9.shape[3]; i++) {
-        features = train9.pick(null,null,null,i);
-        features = features.reshape(120);
-        knnClassifier.addExample(features.tolist(), 9);
+        features9= train9.pick(null,null,null,i);
+        features9 = features9.reshape(120);
+        knnClassifier.addExample(features9.tolist(), 9);
     }
 
 
@@ -107,226 +386,4 @@ function Train(){
 
 
 }
-
-function CenterData(){
-    var xValues = oneFrameOfData.slice([],[],[0,6,3]);
-
-    var currentMean = xValues.mean();
-
-    var horizontalShift = (0.5 - currentMean);
-
-    // console.log("before: " + currentMean);
-
-    for (var i = 0; i < 5; i++) {     // rows
-        for (var j = 0; j < 4; j++) {   // columns
-            // Top X
-            var currentX = oneFrameOfData.get(i, j, 0);
-
-            var shiftedX = currentX + horizontalShift;
-
-            oneFrameOfData.set(i, j, 0, shiftedX);
-
-            // Bottom X
-            currentX = oneFrameOfData.get(i, j, 3);
-
-            shiftedX = currentX + horizontalShift;
-
-            oneFrameOfData.set(i, j, 3, shiftedX);
-        }
-    }
-
-    var yValues = oneFrameOfData.slice([],[],[1,6,3]);
-
-    var YcurrentMean = yValues.mean();
-
-    var verticalShift = (0.5 - YcurrentMean);
-
-
-    for (var i = 0; i < 5; i++) {     // rows
-        for (var j = 0; j < 4; j++) {   // columns
-            // Top Y
-            var currentY = oneFrameOfData.get(i, j, 1);
-
-            var shiftedY = currentY + verticalShift;
-
-            oneFrameOfData.set(i, j, 1, shiftedY);
-
-            // Bottom Y
-            currentY = oneFrameOfData.get(i, j, 4);
-
-            shiftedY = currentY + verticalShift;
-
-            oneFrameOfData.set(i, j, 4, shiftedY);
-        }
-    }
-
-    var zValues = oneFrameOfData.slice([],[],[2,6,3]);
-
-    var ZcurrentMean = zValues.mean();
-
-    var ZShift = (0.5 - ZcurrentMean);
-
-
-    for (var i = 0; i < 5; i++) {     // rows
-        for (var j = 0; j < 4; j++) {   // columns
-            // Top Z
-            var currentZ = oneFrameOfData.get(i, j, 2);
-
-            var shiftedZ = currentZ + ZShift;
-
-            oneFrameOfData.set(i, j, 2, shiftedZ);
-
-            // Bottom Z
-            currentZ = oneFrameOfData.get(i, j, 5);
-
-            shiftedZ = currentZ + ZShift;
-
-            oneFrameOfData.set(i, j, 5, shiftedZ);
-        }
-    }
-
-
-}
-
-function Test(){
-    CenterData();
-    currentFeatures = oneFrameOfData.pick(null, null, null, ).reshape(120);
-
-
-    //console.log(currentFeatures.toString());
-
-    predictedLabel = knnClassifier.classify(currentFeatures.tolist(), GotResults);
-
-}
-
-function GotResults(err, result){
-    var c = result.label;
-
-
-    predictedClassLabels.set(parseInt(result.label));
-    n += 1;
-    m = (((n-1)*m) + (c == d))/n;
-    console.log(n + " " + m + " " + c);
-}
-
-function DrawCircles(){
-
-}
-
-function HandleFrame(frame) {
-    var interactionBox = frame.interactionBox;
-    if (frame.hands.length == 1){
-        moreThanOneHand = false;
-        var hand = frame.hands[0];
-        HandleHand(hand, moreThanOneHand, interactionBox);
-        //console.log(oneFrameOfData.toString());
-        Test();
-    } else if (frame.hands.length > 1) {
-        moreThanOneHand = true;
-        var hand = frame.hands[0];
-        HandleHand(hand, moreThanOneHand, interactionBox);
-    } else {
-        moreThanOneHand = false;
-    }
-}
-function HandleHand(hand, moreThanOneHand, interactionBox) {
-    var fingers = hand.fingers;
-    for (var i = 3; i >= 0; i -= 1) {     // For each bone
-        for (var j = 4; j >= 0; j -= 1) {   // For each finger
-
-            HandleBone(fingers[j].bones[i], fingers[j].bones[i].type, j, moreThanOneHand, interactionBox);
-        }
-    }
-}
-
-function HandleBone(bone, boneType, fingerIndex, moreThanOneHand, interactionBox) {
-    var normalizedPrevJoint = interactionBox.normalizePoint(bone.prevJoint, true);
-    var normalizedNextJoint = interactionBox.normalizePoint(bone.nextJoint, true);
-
-
-    xt = normalizedNextJoint[0];
-    yt = normalizedNextJoint[1];
-    zt = normalizedNextJoint[2];
-
-    xb = normalizedPrevJoint[0];
-    yb = normalizedPrevJoint[1];
-    zb = normalizedPrevJoint[2];
-
-
-    // console.log("Normalized Prev Joint: " + normalizedPrevJoint);
-    // console.log("Normalized Next Joint: " + normalizedNextJoint);
-
-    oneFrameOfData.set(fingerIndex, boneType, 0, xb);
-    oneFrameOfData.set(fingerIndex, boneType, 1, yb);
-    oneFrameOfData.set(fingerIndex, boneType, 2, zb);
-    oneFrameOfData.set(fingerIndex, boneType, 3, xt);
-    oneFrameOfData.set(fingerIndex, boneType, 4, yt);
-    oneFrameOfData.set(fingerIndex, boneType, 5, zt);
-
-
-    var canvasPrevX = window.innerWidth * normalizedPrevJoint[0];
-    var canvasPrevY = window.innerHeight * (1 - normalizedPrevJoint[1]);
-
-    var canvasNextX = window.innerWidth * normalizedNextJoint[0];
-    var canvasNextY = window.innerHeight * (1 - normalizedNextJoint[1]);
-
-    // console.log(oneFrameOfData);
-    //if (moreThanOneHand) {
-        if (boneType == 0) {
-            strokeWeight(8*3);
-            // stroke(20);
-            stroke(200);
-        } else if (boneType == 1) {
-            strokeWeight(6*3);
-            // stroke(60);
-            stroke(150);
-        } else if (boneType == 2) {
-            strokeWeight(4*3);
-            // stroke(80);
-            stroke(100);
-        } else {
-            strokeWeight(2*3);
-            // stroke(100);
-            stroke(50);
-        }
-    // } else {
-    //     if (boneType == 0) {
-    //         strokeWeight(8*3);
-    //         // stroke(20);
-    //         stroke(200);
-    //     } else if (boneType == 1) {
-    //         strokeWeight(6*3);
-    //         // stroke(60);
-    //         stroke(150);
-    //     } else if (boneType == 2) {
-    //         strokeWeight(4*3);
-    //         // stroke(80);
-    //         stroke(100);
-    //     } else {
-    //         strokeWeight(2*3);
-    //         // stroke(100);
-    //         stroke(50);
-    //     }
-    // }
-    line(canvasNextX, canvasNextY, canvasPrevX, canvasPrevY, zt, zb);
-}
-
-// function RecordData() {
-//     if (currentNumHands == 2) {
-//         currentSample += 1;
-//         if (currentSample == numSamples) {
-//             currentSample = 0;
-//         }
-//     }
-//
-//     if (previousNumHands == 2 && currentNumHands == 1) {
-//         background(0)
-//         // console.log(framesOfData.pick(null, null, null, currentSample).toString());
-//         // console.log(framesOfData.pick(null, null, null, 0).toString());
-//         // console.log(framesOfData.pick(null, null, null, 1).toString());
-//         console.log(framesOfData.toString());
-//
-//         //console.log(currentSample);
-//     }
-// }
 
