@@ -23,6 +23,12 @@ var m = 0;
 var d = 1;
 var programState = 0;
 
+function SignIn(){
+    username = document.getElementById('username').value;
+    console.log(username)
+}
+
+
 function compute_prediction_7(c,d){
     n++
     m = (((n-1)*m) + (c==d))/n
