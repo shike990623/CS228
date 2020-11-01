@@ -25,7 +25,46 @@ var programState = 0;
 
 function SignIn(){
     username = document.getElementById('username').value;
-    console.log(username)
+    var list = document.getElementById('users');
+    if(IsNewUser(username, list)){
+        CreateNewUser(username,list)
+        CreateSignInItem(username,list)
+    } else { //Returing User
+        //ID tag for the list item user’s number of sign in attempts
+        var ID = String(username) + "_signins";
+        //Will return such an item.
+        var listItem = document.getElementById(ID);
+        listItem.innerHTML = parseInt (listItem.innerHTML) + 1;
+    }
+    console.log(list.innerHTML);
+    return false;
+
+}
+
+function IsNewUser(username, list) {
+    var usernameFound = false;
+    var users = list.children;
+    for (var i = 0; i < users.length; i++) {
+        if (username == users[i].innerHTML){
+            usernameFound = true;
+        }
+    }
+    return usernameFound == false;
+}
+
+function CreateNewUser(username,list){
+    //Creating an html list item
+    var item = document.createElement('li');
+    item.id = String(username) + "_name";
+    item.innerHTML = String(username);
+    list.appendChild(item);
+}
+function CreateSignInItem(username,list){
+    //Creating a 2nd list item (keep track of signins)
+    var item2 = document.createElement('li');
+    item2.id = String(username) + "_signins";
+    item2.innerHTML = 1;
+    list.appendChild(item2);
 }
 
 
