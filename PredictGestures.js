@@ -1,4 +1,4 @@
-//var testingSampleIndex = 0;
+var testingSampleIndex = 0;
 const knnClassifier = ml5.KNNClassifier();
 
 var trainingCompleted = false;
@@ -20,8 +20,10 @@ var currentSample = 0;
 var predictedClassLabels = nj.zeros(2);
 var n = 0;
 var m = 0;
-var d = 1;
+var d = 3;
 var programState = 0;
+var digitToShow = 3;
+var timeSinceLastDigitChange = new Date();
 
 function SignIn(){
     username = document.getElementById('username').value;
@@ -68,24 +70,31 @@ function CreateSignInItem(username,list){
 }
 
 
-function compute_prediction_7(c,d){
-    n++
-    m = (((n-1)*m) + (c==d))/n
-    console.log(n,m,c)
-}
+// function compute_prediction_7(c,d){
+//     n++
+//     m = (((n-1)*m) + (c==d))/n
+//     console.log(n,m,c)
+// }
 function Test(){
-    var currentFeatures = oneFrameOfData
-    // CenterDataX()
-    // CenterDataY()
-    // CenterDataZ()
-    currentFeatures = currentFeatures.reshape(1,120)
-    predictLabel = knnClassifier.classify(currentFeatures.tolist(), GotResults);
+    var currentTestingSample = oneFrameOfData.pick(null, null, null, 0);
+    CenterDataX()
+    CenterDataY()
+    CenterDataZ()
+    currentTestingSample = currentTestingSample.reshape(120).tolist();
+    //console.log(currentTestingSample)
+    knnClassifier.classify(currentTestingSample, GotResults);
 }
 
 function GotResults(err, result){
-    //compute_prediction_7(result.label,3);
-    console.log(result.label)
+    var c = result.label;
+
+
+    predictedClassLabels.set(parseInt(result.label));
+    n += 1;
+    m = (((n-1)*m) + (c == digitToShow))/n;
+    console.log(n + " " + m + " " + c);
 }
+
 function CenterDataX(){
     var xValues = oneFrameOfData.slice([],[],[0,6,3])
     var currentMean = xValues.mean()
@@ -104,7 +113,7 @@ function CenterDataY(){
 function CenterDataZ(){
     var zValues = oneFrameOfData.slice([],[],[2,6,3])
     var currentMean = zValues.mean()
-    console.log(currentMean)
+    //console.log(currentMean)
     return currentMean
 
 
@@ -174,26 +183,27 @@ function HandleBone(bone,type,fingerIndex,interactionBox){
     var canvasYEnd =  (window.innerHeight * (1-y_end)) * 0.5;
 
     //line and line weight
-    switch(type){
-        case 0:
-            strokeWeight(20)
-            stroke(210)
-            break;
-        case 1:
-            strokeWeight(15)
-            stroke(120)
-            break;
-        case 2:
-            strokeWeight(10)
-            stroke(70)
-            break;
-        case 3:
-            strokeWeight(5)
-            stroke(10)
-            break;
+    var yellow = m * 450;
+    var red = (1 - m) * 450;
+    if (type == 0) {
+        stroke(red, yellow, 0);
+        strokeWeight(20);
+        line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
+    } else if (type == 1) {
+        stroke(red, yellow, 0);
+        strokeWeight(15);
+        line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
+    } else if (type == 2) {
+        stroke(red, yellow, 0);
+        strokeWeight(10);
+        line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
+    } else {
+        stroke(red, yellow, 0);
+        strokeWeight(5);
+        line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
     }
 
-    line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
+    //line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
 
 }
 
@@ -291,9 +301,46 @@ function HandleState1(frame) {
 }
 function HandleState2(frame) {
     HandleFrame(frame);
-    //test
+    DrawLowerRightPanel();
+    DetermineWhetherToSwitchDigits()
+    Test()
 }
 
+function DrawLowerRightPanel(){
+    if (digitToShow == 3) {
+        image(n3, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    } else {
+        image(n5, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+}
+
+function DetermineWhetherToSwitchDigits() {
+    if (TimeToSwitchDigits()) {
+        SwitchDigits();
+    }
+}
+
+function TimeToSwitchDigits() {
+    var currentTime = new Date();
+    var timeInBetweenInMilliseconds = currentTime - timeSinceLastDigitChange;
+    var timeInBetweenInSeconds = timeInBetweenInMilliseconds / 1000;
+    console.log(timeInBetweenInSeconds);
+    if (timeInBetweenInSeconds >= 6) {
+        timeSinceLastDigitChange = new Date();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function SwitchDigits() {
+    n=0;
+    if (digitToShow === 3) {
+        digitToShow = 5;
+    } else {
+        digitToShow = 3;
+    }
+}
 
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
     image(img, 10, 10, window.innerWidth/2.2, window.innerHeight/2.2);
@@ -301,7 +348,7 @@ function DrawImageToHelpUserPutTheirHandOverTheDevice(){
 
 function TrainKNNIfNotDoneYet() {
     if(trainingCompleted == false){
-        // Train();
+        Train();
         trainingCompleted = true;
     }
 }
@@ -343,7 +390,7 @@ function Train(){
 
 
     for (var i = 0; i < train1.shape[3]; i++) {
-        features1 = train1.pick(null,null,null,i);
+        features1 = train1ke.pick(null,null,null,i);
         features1 = features1.reshape(120);
         //console.log(features.toString());
         knnClassifier.addExample(features1.tolist(), 1);
