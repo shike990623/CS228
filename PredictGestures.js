@@ -443,7 +443,7 @@ function Train(){
     }
 
     for (var i = 0; i < train7.shape[3]; i++) {
-        features7 = train7.pick(null,null,null,i);
+        features7 = train7ke.pick(null,null,null,i);
         features7 = features7.reshape(120);
         knnClassifier.addExample(features7.tolist(), 7);
     }
@@ -453,6 +453,7 @@ function Train(){
         feature7v = feature7v.reshape(120);
         knnClassifier.addExample(feature7v.tolist(), 7);
     }
+
 
     for (var i = 0; i < train7.shape[3]; i++) {
         feature7f = train7Fisher.pick(null,null,null,i);
