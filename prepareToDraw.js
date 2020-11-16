@@ -15,6 +15,18 @@ var n6;
 var n7;
 var n8;
 var n9;
+var d0;
+var d1;
+var d2;
+var d3;
+var d4;
+var d5;
+var d6;
+var d7;
+var d8;
+var d9;
+var check;
+var cross;
 
 function setup() {
     createCanvas(window.innerWidth,window.innerHeight);
@@ -35,4 +47,16 @@ function setup() {
     n7 = loadImage('https://i.imgur.com/ovEFOr8.jpg');
     n8 = loadImage('https://i.imgur.com/gcJPkTc.jpg');
     n9 = loadImage('https://i.imgur.com/98gdxBg.jpg');
+    d0 = loadImage('https://i.imgur.com/NPdpsqQ.jpg');
+    d1 = loadImage('https://i.imgur.com/YS1OugL.jpg');
+    d2 = loadImage('https://i.imgur.com/b8vqFjP.jpg');
+    d3 = loadImage('https://i.imgur.com/eN9XPge.jpg');
+    d4 = loadImage('https://i.imgur.com/t8zq5tm.jpg');
+    d5 = loadImage('https://i.imgur.com/MfAnYbH.jpg');
+    d6 = loadImage('https://i.imgur.com/s1CQg1u.jpg');
+    d7 = loadImage('https://i.imgur.com/fng77t5.jpg');
+    d8 = loadImage('https://i.imgur.com/n16M8ct.jpg');
+    d9 = loadImage('https://i.imgur.com/Evn0NXV.jpg');
+    check = loadImage('https://i.imgur.com/mPrSog5.jpg');
+    cross = loadImage('https://i.imgur.com/TMagLJm.jpg');
 }

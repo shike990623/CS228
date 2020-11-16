@@ -22,7 +22,7 @@ var n = 0;
 var m = 0;
 var d = 3;
 var programState = 0;
-var digitToShow = 3;
+var digitToShow = 0;
 var timeSinceLastDigitChange = new Date();
 
 function SignIn(){
@@ -188,6 +188,7 @@ function HandleBone(bone,type,fingerIndex,interactionBox){
     if (type == 0) {
         stroke(red, yellow, 0);
         strokeWeight(20);
+
         line(canvasXStart,canvasYStart,canvasXEnd,canvasYEnd);
     } else if (type == 1) {
         stroke(red, yellow, 0);
@@ -307,10 +308,36 @@ function HandleState2(frame) {
 }
 
 function DrawLowerRightPanel(){
-    if (digitToShow == 3) {
+    if (digitToShow == 0) {
+        image(n0, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+    }
+    else if (digitToShow == 1) {
+        image(n1, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    else if (digitToShow == 2) {
+        image(n2, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    else if (digitToShow == 3) {
         image(n3, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    } else {
+    }
+    else if (digitToShow == 4) {
+        image(n4, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    else if (digitToShow == 5) {
         image(n5, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    else if (digitToShow == 6) {
+        image(d6, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    else if (digitToShow == 7) {
+        image(d7, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    else if (digitToShow == 8) {
+        image(d8, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    else if (digitToShow == 9) {
+        image(d9, window.innerWidth/2, window.innerHeight/2, 200, 200);
     }
 }
 
@@ -325,7 +352,9 @@ function TimeToSwitchDigits() {
     var timeInBetweenInMilliseconds = currentTime - timeSinceLastDigitChange;
     var timeInBetweenInSeconds = timeInBetweenInMilliseconds / 1000;
     console.log(timeInBetweenInSeconds);
-    if (timeInBetweenInSeconds >= 6) {
+    if (timeInBetweenInSeconds > 4 && m>0.2) {
+        image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+
         timeSinceLastDigitChange = new Date();
         return true;
     } else {
@@ -335,11 +364,36 @@ function TimeToSwitchDigits() {
 
 function SwitchDigits() {
     n=0;
-    if (digitToShow === 3) {
-        digitToShow = 5;
-    } else {
+    if(digitToShow == 0){
+        digitToShow = 1;
+    } else if (digitToShow == 1){
+        digitToShow = 2;
+    }
+    else if (digitToShow == 2){
         digitToShow = 3;
     }
+    else if (digitToShow == 3){
+        digitToShow = 4;
+    }
+    else if (digitToShow == 4){
+        digitToShow = 5;
+    }
+    else if (digitToShow == 5){
+        digitToShow = 6;
+    }
+    else if (digitToShow == 6){
+        digitToShow = 7;
+    }
+    else if (digitToShow == 7){
+        digitToShow = 8;
+    }
+    else if (digitToShow == 8){
+        digitToShow = 9;
+    }
+    else if (digitToShow == 9){
+        digitToShow = 0;
+    }
+
 }
 
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
@@ -382,7 +436,7 @@ function Train(){
     trainingCompleted = true;
 
     for (var i = 0; i < train0.shape[3]; i++) {
-        features0 = train0.pick(null,null,null,i);
+        features0 = train0ke.pick(null,null,null,i);
         features0 = features0.reshape(120);
         //console.log(features.toString());
         knnClassifier.addExample(features0.tolist(), 0);
@@ -409,12 +463,17 @@ function Train(){
         //console.log(features.toString());
         knnClassifier.addExample(features1b.tolist(), 1);
     }
-
     for (var i = 0; i < train2.shape[3]; i++) {
         features2 = train2.pick(null,null,null,i);
         features2 = features2.reshape(120);
         //console.log(features.toString());
         knnClassifier.addExample(features2.tolist(), 2);
+    }
+    for (var i = 0; i < train2.shape[3]; i++) {
+        features2a = train2ke.pick(null,null,null,i);
+        features2a = features2a.reshape(120);
+        //console.log(features.toString());
+        knnClassifier.addExample(features2a.tolist(), 2);
     }
 
     for (var i = 0; i < train3.shape[3]; i++) {
@@ -425,7 +484,7 @@ function Train(){
     }
 
     for (var i = 0; i < train4.shape[3]; i++) {
-        features4 = train4.pick(null,null,null,i);
+        features4 = train4ke.pick(null,null,null,i);
         features4 = features4.reshape(120);
         //console.log(features.toString());
         knnClassifier.addExample(features4.tolist(), 4);
@@ -442,6 +501,18 @@ function Train(){
         knnClassifier.addExample(features6.tolist(), 6);
     }
 
+    for (var i = 0; i < train6.shape[3]; i++) {
+        features6 = train6f.pick(null,null,null,i);
+        features6 = features6.reshape(120);
+        knnClassifier.addExample(features6.tolist(), 6);
+    }
+
+    for (var i = 0; i < train6.shape[3]; i++) {
+        features6 = train6ko.pick(null,null,null,i);
+        features6 = features6.reshape(120);
+        knnClassifier.addExample(features6.tolist(), 6);
+    }
+
     for (var i = 0; i < train7.shape[3]; i++) {
         features7 = train7ke.pick(null,null,null,i);
         features7 = features7.reshape(120);
@@ -449,27 +520,35 @@ function Train(){
     }
 
     for (var i = 0; i < train7.shape[3]; i++) {
-        feature7v = train7Vega.pick(null,null,null,i);
-        feature7v = feature7v.reshape(120);
-        knnClassifier.addExample(feature7v.tolist(), 7);
+        feature7 = train7Vega.pick(null,null,null,i);
+        feature7 = feature7.reshape(120);
+        knnClassifier.addExample(feature7.tolist(), 7);
     }
 
 
     for (var i = 0; i < train7.shape[3]; i++) {
-        feature7f = train7Fisher.pick(null,null,null,i);
-        feature7f = feature7f.reshape(120);
-        knnClassifier.addExample(feature7f.tolist(), 7);
+        feature7 = train7Fisher.pick(null,null,null,i);
+        feature7 = feature7.reshape(120);
+        knnClassifier.addExample(feature7.tolist(), 7);
     }
 
     for (var i = 0; i < train8.shape[3]; i++) {
         features8 = train8.pick(null,null,null,i);
         features8 = features8.reshape(120);
-
         knnClassifier.addExample(features8.tolist(), 8);
     }
-
+    for (var i = 0; i < train8.shape[3]; i++) {
+        features8 = train8ke.pick(null,null,null,i);
+        features8 = features8.reshape(120);
+        knnClassifier.addExample(features8.tolist(), 8);
+    }
     for (var i = 0; i < train9.shape[3]; i++) {
         features9= train9.pick(null,null,null,i);
+        features9 = features9.reshape(120);
+        knnClassifier.addExample(features9.tolist(), 9);
+    }
+    for (var i = 0; i < train9.shape[3]; i++) {
+        features9= train9ke.pick(null,null,null,i);
         features9 = features9.reshape(120);
         knnClassifier.addExample(features9.tolist(), 9);
     }
