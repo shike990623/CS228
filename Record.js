@@ -135,9 +135,69 @@ function RecordData() {
         // console.log(framesOfData.pick(null, null, null, currentSample).toString());
         // console.log(framesOfData.pick(null, null, null, 0).toString());
        // console.log(framesOfData.pick(null, null, null, 1).toString());
+        //CenterData();
         console.log(framesOfData.toString());
 
         //console.log(currentSample);
+    }
+}
+
+function CenterData(){
+    CenterDataX();
+    CenterDataY();
+    CenterDataZ();
+}
+function CenterDataX(){
+    //Find mean
+    var xValues = framesOfData.slice([],[],[0,6,3]);	//All 40 x-coor
+    //console.log(xValues.toString());
+    var currentMean = xValues.mean();					//Mean of all 40
+    var horizontalShift = 0.5 - currentMean;
+    //Shifts all x coords
+    for (var f = 0; f < 5; f++) {
+        for (var b = 0; b < 4; b++) {
+            var currentX = framesOfData.get(f,b,0);
+            var shiftedX = currentX + horizontalShift;
+            framesOfData.set(f,b,0, shiftedX);
+            currentX = framesOfData.get(f,b,3);
+            shiftedX = currentX + horizontalShift;
+            framesOfData.set(f,b,3, shiftedX);
+        }
+    }
+}
+function CenterDataY(){
+    //Find mean
+    var yValues = framesOfData.slice([],[],[1,6,3]);
+    var currentMeanY = yValues.mean();
+    var verticalShift = 0.5 - currentMeanY;
+    //console.log("y " + currentMean);
+    //Shifts all Y coords
+    for (var f = 0; f < 5; f++) {
+        for (var b = 0; b < 4; b++) {
+            var currentY = framesOfData.get(f,b,1);
+            var shiftedY = currentY + verticalShift;
+            framesOfData.set(f,b,1, shiftedY);
+            currentY = framesOfData.get(f,b,4);
+            shiftedY = currentY + verticalShift;
+            framesOfData.set(f,b,4, shiftedY);
+        }
+    }
+}
+function CenterDataZ(){
+    var zValues = framesOfData.slice([],[],[2,6,3]);
+    currentMean = zValues.mean();
+    var zShift = 0.5 - currentMean;
+    //console.log("z " + currentMean);
+    //Shifts all Z coords
+    for (var f = 0; f < 5; f++) {
+        for (var b = 0; b < 4; b++) {
+            var currentZ = framesOfData.get(f,b,2);
+            var shiftedZ = currentZ + zShift;
+            framesOfData.set(f,b,2, shiftedZ);
+            currentZ = framesOfData.get(f,b,5);
+            shiftedZ = currentZ + zShift;
+            framesOfData.set(f,b,5, shiftedZ);
+        }
     }
 }
 

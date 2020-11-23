@@ -25,6 +25,12 @@ var d6;
 var d7;
 var d8;
 var d9;
+var A;
+var B;
+var C;
+var D;
+var E;
+var F;
 var check;
 var cross;
 
@@ -57,6 +63,12 @@ function setup() {
     d7 = loadImage('https://i.imgur.com/fng77t5.jpg');
     d8 = loadImage('https://i.imgur.com/n16M8ct.jpg');
     d9 = loadImage('https://i.imgur.com/Evn0NXV.jpg');
+    A = loadImage('https://i.imgur.com/Hje3VdQ.png');
+    B = loadImage('https://i.imgur.com/ph4G1xX.png');
+    C = loadImage('https://i.imgur.com/HwYIllF.png');
+    D = loadImage('https://i.imgur.com/l5JozyG.png');
+    E = loadImage('https://i.imgur.com/Do8S7tj.png');
+    F = loadImage('https://i.imgur.com/BylYOOl.png');
     check = loadImage('https://i.imgur.com/mPrSog5.jpg');
     cross = loadImage('https://i.imgur.com/TMagLJm.jpg');
 }
