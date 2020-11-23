@@ -25,6 +25,35 @@ var programState = 0;
 var digitToShow = 0;
 var timeSinceLastDigitChange = new Date();
 
+var zero = [0,false];
+var one = [1,false];
+var two = [2,false];
+var three = [3,false];
+var four = [4,false];
+var five = [5,false];
+var six = [6,false];
+var seven = [7,false];
+var eight = [8,false];
+var nine = [9,false];
+var comebackto = [];
+var numlist = [zero,one,two,three,four,five,six,seven,eight,nine];
+var startshowingonlynumbers = false;
+
+var time0 = 6;
+var time1 = 6;
+var time2 = 6;
+var time3 = 6;
+var time4 = 6;
+var time5 = 6;
+var time6 = 6;
+var time7 = 6;
+var time8 = 6;
+var time9 = 6;
+var timetogo = 6;
+var times = [time0,time1,time2,time3,time4,time5,time6,time7,time8,time9];
+
+
+
 function SignIn(){
     username = document.getElementById('username').value;
     var list = document.getElementById('users');
@@ -308,37 +337,72 @@ function HandleState2(frame) {
 }
 
 function DrawLowerRightPanel(){
-    if (digitToShow == 0) {
-        image(n0, window.innerWidth/2, window.innerHeight/2, 200, 200);
-        //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+    if (startshowingonlynumbers == false){
+        if (digitToShow == 0) {
+            image(n0, window.innerWidth/2, window.innerHeight/2, 200, 200);
+            //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+        }
+        else if (digitToShow == 1) {
+            image(n1, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 2) {
+            image(n2, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 3) {
+            image(n3, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 4) {
+            image(n4, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 5) {
+            image(n5, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 6) {
+            image(n6, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 7) {
+            image(n7, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 8) {
+            image(n8, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 9) {
+            image(n9, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
     }
-    else if (digitToShow == 1) {
-        image(n1, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 2) {
-        image(n2, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 3) {
-        image(n3, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 4) {
-        image(n4, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 5) {
-        image(n5, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 6) {
-        image(d6, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 7) {
-        image(d7, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 8) {
-        image(d8, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 9) {
-        image(d9, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
+     if (startshowingonlynumbers == true){
+        if (digitToShow == 0) {
+            image(d0, window.innerWidth/2, window.innerHeight/2, 200, 200);
+            //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+        }
+        else if (digitToShow == 1) {
+            image(d1, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 2) {
+            image(d2, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 3) {
+            image(d3, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 4) {
+            image(d4, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 5) {
+            image(d5, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 6) {
+            image(d6, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 7) {
+            image(d7, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 8) {
+            image(d8, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 9) {
+            image(d9, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+     }
 }
 
 function DetermineWhetherToSwitchDigits() {
@@ -352,8 +416,8 @@ function TimeToSwitchDigits() {
     var timeInBetweenInMilliseconds = currentTime - timeSinceLastDigitChange;
     var timeInBetweenInSeconds = timeInBetweenInMilliseconds / 1000;
     console.log(timeInBetweenInSeconds);
-    if (timeInBetweenInSeconds > 4 && m>0.2) {
-        image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+    if (timeInBetweenInSeconds > timetogo) {
+        //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
 
         timeSinceLastDigitChange = new Date();
         return true;
@@ -362,38 +426,81 @@ function TimeToSwitchDigits() {
     }
 }
 
-function SwitchDigits() {
-    n=0;
-    if(digitToShow == 0){
-        digitToShow = 1;
-    } else if (digitToShow == 1){
-        digitToShow = 2;
-    }
-    else if (digitToShow == 2){
-        digitToShow = 3;
-    }
-    else if (digitToShow == 3){
-        digitToShow = 4;
-    }
-    else if (digitToShow == 4){
-        digitToShow = 5;
-    }
-    else if (digitToShow == 5){
-        digitToShow = 6;
-    }
-    else if (digitToShow == 6){
-        digitToShow = 7;
-    }
-    else if (digitToShow == 7){
-        digitToShow = 8;
-    }
-    else if (digitToShow == 8){
-        digitToShow = 9;
-    }
-    else if (digitToShow == 9){
-        digitToShow = 0;
+function SwitchDigits(){
+    n=0
+    var countchocula = 0;
+    var nextnumberplease = digitToShow+1;
+    var thisdigit = digitToShow;
+    var skip = false;
+    if(nextnumberplease == 10){
+        nextnumberplease = 0;
     }
 
+    if(comebackto.length > 0){
+        digitToShow = comebackto[0];
+        comebackto.shift();
+    }
+    else{
+        var searching = true;
+        while(searching){
+            if(countchocula == 9){
+                searching = false;
+                countchocula = 0;
+                digitToShow = 0;
+                comebackto = [];
+                numlist[0][1] = false;
+                numlist[1][1] = false;
+                numlist[2][1] = false;
+                numlist[3][1] = false;
+                numlist[4][1] = false;
+                numlist[5][1] = false;
+                numlist[6][1] = false;
+                numlist[7][1] = false;
+                numlist[8][1] = false;
+                numlist[9][1] = false;
+                startshowingonlynumbers = true;
+                skip = true;
+
+                times[0] = 6;
+                times[1] = 6;
+                times[2] = 6;
+                times[3] = 6;
+                times[4] = 6;
+                times[5] = 6;
+                times[6] = 6;
+                times[7] = 6;
+                times[8] = 6;
+                times[9] = 6;
+
+            }
+            else{
+                if((numlist[nextnumberplease][1]) == false){
+                    digitToShow = nextnumberplease;
+                    searching = false;
+                }
+                else{
+                    countchocula+=1
+                    nextnumberplease+=1
+                    if(nextnumberplease == 10){
+                        nextnumberplease = 0;
+                    }
+                }
+            }
+        }
+    }
+    if(skip == false){
+        if(m >= 0.5){
+            numlist[thisdigit][1] = true;
+            times[thisdigit] = times[thisdigit]-3;
+        }
+        else{
+            comebackto.push(thisdigit);
+            //times[thisdigit] = times[thisdigit]+1;
+        }
+    }
+    m = 0;
+    d = 0;
+    timetogo = times[thisdigit];
 }
 
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
@@ -451,17 +558,17 @@ function Train(){
     }
 
     for (var i = 0; i < train1.shape[3]; i++) {
-        features1l = train1Li.pick(null,null,null,i);
-        features1l = features1l.reshape(120);
+        features1 = train1Li.pick(null,null,null,i);
+        features1 = features1.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features1l.tolist(), 1);
+        knnClassifier.addExample(features1.tolist(), 1);
     }
 
     for (var i = 0; i < train1.shape[3]; i++) {
-        features1b = train1Bongard.pick(null,null,null,i);
-        features1b = features1b.reshape(120);
+        features1 = train1Bongard.pick(null,null,null,i);
+        features1 = features1.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features1b.tolist(), 1);
+        knnClassifier.addExample(features1.tolist(), 1);
     }
     for (var i = 0; i < train2.shape[3]; i++) {
         features2 = train2.pick(null,null,null,i);
@@ -470,10 +577,10 @@ function Train(){
         knnClassifier.addExample(features2.tolist(), 2);
     }
     for (var i = 0; i < train2.shape[3]; i++) {
-        features2a = train2ke.pick(null,null,null,i);
-        features2a = features2a.reshape(120);
+        features2 = train2ke.pick(null,null,null,i);
+        features2 = features2.reshape(120);
         //console.log(features.toString());
-        knnClassifier.addExample(features2a.tolist(), 2);
+        knnClassifier.addExample(features2.tolist(), 2);
     }
 
     for (var i = 0; i < train3.shape[3]; i++) {
@@ -492,6 +599,12 @@ function Train(){
 
     for (var i = 0; i < train5.shape[3]; i++) {
         features5 = train5.pick(null, null, null, i);
+        features5 = features5.reshape(120);
+        knnClassifier.addExample(features5.tolist(), 5);
+    }
+
+    for (var i = 0; i < train5.shape[3]; i++) {
+        features5 = train5f.pick(null, null, null, i);
         features5 = features5.reshape(120);
         knnClassifier.addExample(features5.tolist(), 5);
     }
