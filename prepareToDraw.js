@@ -31,6 +31,14 @@ var C;
 var D;
 var E;
 var F;
+var sA;
+var sB;
+var sC;
+var sD;
+var sE;
+var sF;
+var load
+var prepare;
 var check;
 var cross;
 
@@ -69,6 +77,14 @@ function setup() {
     D = loadImage('https://i.imgur.com/l5JozyG.png');
     E = loadImage('https://i.imgur.com/Do8S7tj.png');
     F = loadImage('https://i.imgur.com/BylYOOl.png');
+    sA = loadImage('https://i.imgur.com/vHxAkhA.png');
+    sB = loadImage('https://i.imgur.com/pYcBBxw.png');
+    sC = loadImage('https://i.imgur.com/MldhqCs.png');
+    sD = loadImage('https://i.imgur.com/V6KBLGg.png');
+    sE = loadImage('https://i.imgur.com/S0dW1YO.png');
+    sF = loadImage('https://i.imgur.com/cig4pDp.png');
+    load = loadImage('https://i.imgur.com/tJJ6pQw.png');
+    prepare = loadImage('https://i.imgur.com/Kuh1Bq6.png');
     check = loadImage('https://i.imgur.com/mPrSog5.jpg');
     cross = loadImage('https://i.imgur.com/TMagLJm.jpg');
 }

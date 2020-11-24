@@ -146,7 +146,7 @@ function GotResults(err, result){
     } else if (c == 5){
         aslLetter = "F";
     }
-    console.log(m.toFixed(4) + " " + c+ ":" + aslLetter);
+    console.log(m.toFixed(4) + m + c+ ":" + aslLetter);
 
 }
 
@@ -351,6 +351,7 @@ function HandIsTooFar(){
 function HandleState0(frame) {
     TrainKNNIfNotDoneYet()
     DrawImageToHelpUserPutTheirHandOverTheDevice()
+    //DetermineWhetherToSwitchDigits()
 }
 function HandleState1(frame) {
     //test
@@ -360,28 +361,45 @@ function HandleState2(frame) {
     DrawLowerRightPanel();
     DetermineWhetherToSwitchDigits()
     Test()
+    if (m>0.5){
+        image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+
+    }
 }
 
 function DrawLowerRightPanel(){
+    if (startshowingonlynumbers == false) {
         if (digitToShow == 0) {
-            image(A, window.innerWidth/2, window.innerHeight/2, 200, 200);
+            image(A, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
             //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+        } else if (digitToShow == 1) {
+            image(B, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 2) {
+            image(C, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 3) {
+            image(D, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 4) {
+            image(E, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 5) {
+            image(F, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
         }
-        else if (digitToShow == 1) {
-            image(B, window.innerWidth/2, window.innerHeight/2, 200, 200);
+    }
+    if (startshowingonlynumbers == true) {
+        if (digitToShow == 0) {
+            image(sA, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+            //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+        } else if (digitToShow == 1) {
+            image(sB, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 2) {
+            image(sC, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 3) {
+            image(sD, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 4) {
+            image(sE, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
+        } else if (digitToShow == 5) {
+            image(sF, window.innerWidth / 2, window.innerHeight / 2, 200, 200);
         }
-        else if (digitToShow == 2) {
-            image(C, window.innerWidth/2, window.innerHeight/2, 200, 200);
-        }
-        else if (digitToShow == 3) {
-            image(D, window.innerWidth/2, window.innerHeight/2, 200, 200);
-        }
-        else if (digitToShow == 4) {
-            image(E, window.innerWidth/2, window.innerHeight/2, 200, 200);
-        }
-        else if (digitToShow == 5) {
-            image(F, window.innerWidth/2, window.innerHeight/2, 200, 200);
-        }
+    }
 
 
 
@@ -398,7 +416,7 @@ function TimeToSwitchDigits() {
     var timeInBetweenInMilliseconds = currentTime - timeSinceLastDigitChange;
     var timeInBetweenInSeconds = timeInBetweenInMilliseconds / 1000;
     console.log(timeInBetweenInSeconds);
-    if (timeInBetweenInSeconds > 4 && m > 0.5) {
+    if (timeInBetweenInSeconds > timetogo ) {
         //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
 
         timeSinceLastDigitChange = new Date();
@@ -410,23 +428,86 @@ function TimeToSwitchDigits() {
 
 function SwitchDigits(){
     n=0
-    if (digitToShow == 0){
-        digitToShow = 1;
-    } else if (digitToShow == 1){
-        digitToShow = 2;
-    } else if (digitToShow == 2){
-        digitToShow = 3;
-    } else if (digitToShow == 3){
-        digitToShow = 4;
-    } else if (digitToShow == 4){
-        digitToShow = 5;
-    } else if (digitToShow == 5){
-        digitToShow = 0;
+    var countchocula = 0;
+    var nextnumberplease = digitToShow+1;
+    var thisdigit = digitToShow;
+    var skip = false;
+    if(nextnumberplease == 6){
+        nextnumberplease = 0;
     }
+
+    if(comebackto.length > 0){
+        digitToShow = comebackto[0];
+        comebackto.shift();
+    }
+    else{
+        var searching = true;
+        while(searching){
+            if(countchocula == 5){
+                searching = false;
+                countchocula = 0;
+                digitToShow = 0;
+                comebackto = [];
+                numlist[0][1] = false;
+                numlist[1][1] = false;
+                numlist[2][1] = false;
+                numlist[3][1] = false;
+                numlist[4][1] = false;
+                numlist[5][1] = false;
+                // numlist[6][1] = false;
+                // numlist[7][1] = false;
+                // numlist[8][1] = false;
+                // numlist[9][1] = false;
+                startshowingonlynumbers = true;
+                skip = true;
+
+                times[0] = 6;
+                times[1] = 6;
+                times[2] = 6;
+                times[3] = 6;
+                times[4] = 6;
+                times[5] = 6;
+                // times[6] = 6;
+                // times[7] = 6;
+                // times[8] = 6;
+                // times[9] = 6;
+
+            }
+            else{
+                if((numlist[nextnumberplease][1]) == false){
+                    digitToShow = nextnumberplease;
+                    searching = false;
+                }
+                else{
+                    countchocula+=1
+                    nextnumberplease+=1
+                    if(nextnumberplease == 6){
+                        nextnumberplease = 0;
+                    }
+                }
+            }
+        }
+    }
+    if(skip == false){
+        if(m >= 0.5){
+            numlist[thisdigit][1] = true;
+            times[thisdigit] = times[thisdigit]-3;
+        }
+        else{
+            comebackto.push(thisdigit);
+            //times[thisdigit] = times[thisdigit]+1;
+        }
+    }
+    m = 0;
+    d = 0;
+    timetogo = times[thisdigit];
 }
 
 function DrawImageToHelpUserPutTheirHandOverTheDevice(){
     image(img, 10, 10, window.innerWidth/2.2, window.innerHeight/2.2);
+    image(prepare, window.innerWidth/2, window.innerHeight/2, 550, 300);
+    image(load,window.innerWidth/2,0,window.innerWidth/2,window.innerHeight/2);
+
 }
 
 function TrainKNNIfNotDoneYet() {
@@ -479,8 +560,8 @@ function Train(){
         knnClassifier.addExample(features1.tolist(), 1);
     }
 
-    // for (var i = 0; i < train1.shape[3]; i++) {
-    //     features1 = train1Li.pick(null,null,null,i);
+    // for (var i = 0; i < trainB.shape[3]; i++) {
+    //     features1 = train.pick(null,null,null,i);
     //     features1 = features1.reshape(120);
     //     //console.log(features.toString());
     //     knnClassifier.addExample(features1.tolist(), 1);
@@ -512,6 +593,12 @@ function Train(){
         //console.log(features.toString());
         knnClassifier.addExample(features3.tolist(), 3);
     }
+    for (var i = 0; i < trainD.shape[3]; i++) {
+        features3 = train1ke.pick(null,null,null,i);
+        features3 = features3.reshape(120);
+        //console.log(features.toString());
+        knnClassifier.addExample(features3.tolist(), 3);
+    }
 
     for (var i = 0; i < trainE.shape[3]; i++) {
         features4 = trainE.pick(null,null,null,i);
@@ -519,9 +606,20 @@ function Train(){
         //console.log(features.toString());
         knnClassifier.addExample(features4.tolist(), 4);
     }
+    for (var i = 0; i < trainE.shape[3]; i++) {
+        features4 = trainE1.pick(null,null,null,i);
+        features4 = features4.reshape(120);
+        //console.log(features.toString());
+        knnClassifier.addExample(features4.tolist(), 4);
+    }
 
     for (var i = 0; i < trainF.shape[3]; i++) {
         features5 = trainF.pick(null, null, null, i);
+        features5 = features5.reshape(120);
+        knnClassifier.addExample(features5.tolist(), 5);
+    }
+    for (var i = 0; i < trainF.shape[3]; i++) {
+        features5= train9ke.pick(null,null,null,i);
         features5 = features5.reshape(120);
         knnClassifier.addExample(features5.tolist(), 5);
     }
