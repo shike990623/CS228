@@ -50,17 +50,17 @@ var comebackto = [];
 var numlist = [zero,one,two,three,four,five,six,seven,eight,nine];
 var startshowingonlynumbers = false;
 
-var time0 = 6;
-var time1 = 6;
-var time2 = 6;
-var time3 = 6;
-var time4 = 6;
-var time5 = 6;
-var time6 = 6;
-var time7 = 6;
-var time8 = 6;
-var time9 = 6;
-var timetogo = 6;
+var time0 = 3;
+var time1 = 3;
+var time2 = 3;
+var time3 = 3;
+var time4 = 3;
+var time5 = 3;
+var time6 = 3;
+var time7 = 3;
+var time8 = 3;
+var time9 = 3;
+var timetogo = 3;
 var times = [time0,time1,time2,time3,time4,time5,time6,time7,time8,time9];
 
 //In order to make time window smaller
@@ -86,6 +86,13 @@ var sessions = 2;
 var avgCorrectOverall = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 var avgCorrectOverallUser1 = [0.5, 0.5, 0.5, 0.5, 0.4, 0.5, 0, 0, 0];
 var rank = 1;
+var rankM = 1;
+
+var Score = 0;
+var Score1 = 0;
+var LasrScore = 0;
+var HighScore = 398;
+var HighM = 120;
 
 function SignIn(){
     username = document.getElementById('username').value;
@@ -359,18 +366,18 @@ function HandIsTooFar(){
 function HandleState0(frame) {
     TrainKNNIfNotDoneYet()
     DrawImageToHelpUserPutTheirHandOverTheDevice()
-    if (printPerviousCorrectAvg){
-        for (var i = 0; i < perviousCorrectAvg.length; i++) {
-            if (timesDigitTested[i] != 0){
-                perviousCorrectAvg[i] = currentCorrectSum[i]/timesDigitTested[i];
-            } else {
-                perviousCorrectAvg[i] = 0;
-            }
-
-        }
-        console.log(perviousCorrectAvg);
-        printPerviousCorrectAvg = false;
-    }
+    // if (printPerviousCorrectAvg){
+    //     for (var i = 0; i < perviousCorrectAvg.length; i++) {
+    //         if (timesDigitTested[i] != 0){
+    //             perviousCorrectAvg[i] = currentCorrectSum[i]/timesDigitTested[i];
+    //         } else {
+    //             perviousCorrectAvg[i] = 0;
+    //         }
+    //
+    //     }
+    //     console.log(perviousCorrectAvg);
+    //     printPerviousCorrectAvg = false;
+    // }
 }
 function HandleState1(frame) {
     //test
@@ -384,125 +391,167 @@ function HandleState2(frame) {
     strokeWeight(0);
     textSize(20);
     fill(50);
-    text('Current Average Correct:', window.innerWidth / 8 - 95, window.innerHeight / 2 + 60);
-    //text('Correct:', window.innerWidth/8-70, window.innerHeight/2+80);
-    if (timesDigitTested[digitToShow] == 0) {	//If first time signed of session
-        var printCorrect = "first time sign";
-    } else {	//Any sign after the first time signed of session
-        var printCorrect = ((currentCorrectSum[digitToShow] / timesDigitTested[digitToShow]) * 100).toFixed(2).toString() + "%";
+    if (startshowingonlynumbers == false) {
+    if (m > 0.5) {
+        Score = Score+1
+        image(check, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight / 2);
     }
-    text(printCorrect, window.innerWidth / 8 - 70, window.innerHeight / 2 + 80);
-
-    //Write Pervious Accuracy to the screen
-    text('Average Correct Last Session:', window.innerWidth / 8 + 175, window.innerHeight / 2 + 60);
-    //text('Last Session:', window.innerWidth/8-70, window.innerHeight/2+80+100);
-    var printPervCorrect = (perviousCorrectAvg[digitToShow] * 100).toString() + "%";
-    text(printPervCorrect, window.innerWidth / 8 + 175, window.innerHeight / 2 + 100);
-
-    //Update avg correct Over All Sessions, only once info is available
-    if (timesDigitTested[digitToShow] == 0) {
-        avgCorrectOverall[digitToShow] = perviousCorrectAvg[digitToShow];
-    } else {
-        //currentCorrectSum[digitToShow] = ((currentCorrectSum[digitToShow]/timesDigitTested[digitToShow])*100)
-        avgCorrectOverall[digitToShow] = (currentCorrectAvg[digitToShow] + perviousCorrectAvg[digitToShow]) / sessions;
-    }
-
-    text('Average Correct Over all Sessions:', window.innerWidth / 8 - 95, window.innerHeight / 2 + 60 + 150);
-    //text('Over all Sessions:', window.innerWidth/8-95, window.innerHeight/2+80+150);
-    var printAvgCorrectOverall = (avgCorrectOverall[digitToShow] * 100).toString() + "%";
-    text(printAvgCorrectOverall, window.innerWidth / 8 - 95, window.innerHeight / 2 + 100 + 150);
-    //Write Sessions 
-
-    // if (timesDigitTested[di
-    // gitToShow] == 0){
-    //     sessions = 1
-    // }else{
-    //     sessions = 2
-    // }
-    // var printSessions = 'Sessions: ' + sessions;
-    // text(printSessions, window.innerWidth/8-95, window.innerHeight/2+140+150);
-
-    //rank = users
-    //count how many user you are greater than user>user1 -1
-    if (avgCorrectOverall[digitToShow] > avgCorrectOverallUser1[digitTested]) {
+    text('Score:', window.innerWidth / 8 - 95, window.innerHeight / 2 + 60);
+    text(Score, window.innerWidth / 8 - 70, window.innerHeight / 2 + 80);
+    LasrScore = Score;
+    if (HighScore <= Score){
+        HighScore = Score
         rank = 1
-    } else {
-        rank = 2
+    }else{
+        rank=2
     }
-    var users = 2;
-    var rankMsg = 'You rank ' + rank + ' / ' + users;
-    text(rankMsg, window.innerWidth / 8 + 300, window.innerHeight / 2 + 60 + 150);
-//     text('on average correctness', window.innerWidth/8+175, window.innerHeight/2+60+ 170);
-//     text('of all users', window.innerWidth/8+175, window.innerHeight/2+60+ 190);
+        text('Rank in Digital:', window.innerWidth / 8 + 175, window.innerHeight / 2 + 60);
+        R = rank + '/' + '2';
+        text(R, window.innerWidth / 8 + 175, window.innerHeight / 2 + 100);
+    }
 
+
+    else if ( startshowingonlynumbers == true){
+        if (m > 0.5) {
+            Score1 = Score1+1
+            image(check, window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight / 2);
+        }
+
+        text('Digital game Score:', window.innerWidth / 8 - 95, window.innerHeight / 2 + 60 + 150);
+        text(LasrScore, window.innerWidth / 8 - 95, window.innerHeight / 2 + 100 + 150);
+
+        text('Math game Score:', window.innerWidth / 8 - 95, window.innerHeight / 2 + 60);
+        text(Score1, window.innerWidth / 8 - 70, window.innerHeight / 2 + 80);
+
+        if (HighM <= Score1){
+            HighM = Score1
+            rankM = 1
+        }else{
+            rankM = 2
+        }
+        text('Rank in Math:', window.innerWidth / 8 + 175, window.innerHeight / 2 + 60);
+        r = rankM + '/' + '2';
+        text(r, window.innerWidth / 8 + 175, window.innerHeight / 2 + 100);
+    }
 }
+//     text('Current Average Correct:', window.innerWidth / 8 - 95, window.innerHeight / 2 + 60);
+//     //text('Correct:', window.innerWidth/8-70, window.innerHeight/2+80);
+//     if (timesDigitTested[digitToShow] == 0) {	//If first time signed of session
+//         var printCorrect = "first time sign";
+//     } else {	//Any sign after the first time signed of session
+//         var printCorrect = ((currentCorrectSum[digitToShow] / timesDigitTested[digitToShow]) * 100).toFixed(2).toString() + "%";
+//     }
+//     text(printCorrect, window.innerWidth / 8 - 70, window.innerHeight / 2 + 80);
+//
+//     //Write Pervious Accuracy to the screen
+//     text('Average Correct Last Session:', window.innerWidth / 8 + 175, window.innerHeight / 2 + 60);
+//     //text('Last Session:', window.innerWidth/8-70, window.innerHeight/2+80+100);
+//     var printPervCorrect = (perviousCorrectAvg[digitToShow] * 100).toString() + "%";
+//     text(printPervCorrect, window.innerWidth / 8 + 175, window.innerHeight / 2 + 100);
+//
+//     //Update avg correct Over All Sessions, only once info is available
+//     if (timesDigitTested[digitToShow] == 0) {
+//         avgCorrectOverall[digitToShow] = perviousCorrectAvg[digitToShow];
+//     } else {
+//         //currentCorrectSum[digitToShow] = ((currentCorrectSum[digitToShow]/timesDigitTested[digitToShow])*100)
+//         avgCorrectOverall[digitToShow] = (currentCorrectAvg[digitToShow] + perviousCorrectAvg[digitToShow]) / sessions;
+//     }
+//
+//     text('Average Correct Over all Sessions:', window.innerWidth / 8 - 95, window.innerHeight / 2 + 60 + 150);
+//     //text('Over all Sessions:', window.innerWidth/8-95, window.innerHeight/2+80+150);
+//     var printAvgCorrectOverall = (avgCorrectOverall[digitToShow] * 100).toString() + "%";
+//     text(printAvgCorrectOverall, window.innerWidth / 8 - 95, window.innerHeight / 2 + 100 + 150);
+//     //Write Sessions
+//
+//     // if (timesDigitTested[di
+//     // gitToShow] == 0){
+//     //     sessions = 1
+//     // }else{
+//     //     sessions = 2
+//     // }
+//     // var printSessions = 'Sessions: ' + sessions;
+//     // text(printSessions, window.innerWidth/8-95, window.innerHeight/2+140+150);
+//
+//     //rank = users
+//     //count how many user you are greater than user>user1 -1
+//     if (avgCorrectOverall[digitToShow] > avgCorrectOverallUser1[digitTested]) {
+//         rank = 1
+//     } else {
+//         rank = 2
+//     }
+//     var users = 2;
+//     var rankMsg = 'You rank ' + rank + ' / ' + users;
+//     text(rankMsg, window.innerWidth / 8 + 300, window.innerHeight / 2 + 60 + 150);
+// //     text('on average correctness', window.innerWidth/8+175, window.innerHeight/2+60+ 170);
+// //     text('of all users', window.innerWidth/8+175, window.innerHeight/2+60+ 190);
+
 
 function DrawLowerRightPanel(){
     if (startshowingonlynumbers == false){
-    if (digitToShow == 0) {
-        image(n0, window.innerWidth/2, window.innerHeight/2, 200, 200);
-        //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
-    }
-    else if (digitToShow == 1) {
-        image(n1, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 2) {
-        image(n2, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 3) {
-        image(n3, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 4) {
-        image(n4, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 5) {
-        image(n5, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 6) {
-        image(n6, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 7) {
-        image(n7, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 8) {
-        image(n8, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
-    else if (digitToShow == 9) {
-        image(n9, window.innerWidth/2, window.innerHeight/2, 200, 200);
-    }
+        if (digitToShow == 0) {
+            image(n0, window.innerWidth/2, window.innerHeight/2, 200, 200);
+            //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+        }
+        else if (digitToShow == 1) {
+            image(n1, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 2) {
+            image(n2, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 3) {
+            image(n3, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 4) {
+            image(n4, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 5) {
+            image(n5, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 6) {
+            image(n6, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 7) {
+            image(n7, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 8) {
+            image(n8, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
+        else if (digitToShow == 9) {
+            image(n9, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        }
     }
     if (startshowingonlynumbers == true){
-       if (digitToShow == 0) {
-           image(d0, window.innerWidth/2, window.innerHeight/2, 300, 300);
-           //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
-       }
-       else if (digitToShow == 1) {
-           image(d1, window.innerWidth/2, window.innerHeight/2, 200, 200);
-       }
-       else if (digitToShow == 2) {
-           image(d2, window.innerWidth/2, window.innerHeight/2, 300, 300);
-       }
-       else if (digitToShow == 3) {
-           image(d3, window.innerWidth/2, window.innerHeight/2, 300, 300);
-       }
-       else if (digitToShow == 4) {
-           image(d4, window.innerWidth/2, window.innerHeight/2, 300, 300);
-       }
-       else if (digitToShow == 5) {
-           image(d5, window.innerWidth/2, window.innerHeight/2, 200, 200);
-       }
-       else if (digitToShow == 6) {
-           image(d6, window.innerWidth/2, window.innerHeight/2, 200, 200);
-       }
-       else if (digitToShow == 7) {
-           image(d7, window.innerWidth/2, window.innerHeight/2, 300, 300);
-       }
-       else if (digitToShow == 8) {
-           image(d8, window.innerWidth/2, window.innerHeight/2, 200, 200);
-       }
-       else if (digitToShow == 9) {
-           image(d9, window.innerWidth/2, window.innerHeight/2, 300, 300);
-       }
+        if (digitToShow == 0) {
+            image(m0, window.innerWidth/2, window.innerHeight/2, 300, 300);
+            //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
+        }
+            // else if (digitToShow == 1) {
+            //     image(d1, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        // }
+        else if (digitToShow == 2) {
+            image(m2, window.innerWidth/2, window.innerHeight/2, 300, 300);
+        }
+        else if (digitToShow == 3) {
+            image(m3, window.innerWidth/2, window.innerHeight/2, 300, 300);
+        }
+        else if (digitToShow == 4) {
+            image(m4, window.innerWidth/2, window.innerHeight/2, 300, 300);
+        }
+            // else if (digitToShow == 5) {
+            //     image(d5, window.innerWidth/2, window.innerHeight/2, 200, 200);
+            // }
+            // else if (digitToShow == 6) {
+            //     image(d6, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        // }
+        else if (digitToShow == 7) {
+            image(m7, window.innerWidth/2, window.innerHeight/2, 300, 300);
+        }
+            // else if (digitToShow == 8) {
+            //     image(d8, window.innerWidth/2, window.innerHeight/2, 200, 200);
+        // }
+        else if (digitToShow == 9) {
+            image(m9, window.innerWidth/2, window.innerHeight/2, 300, 300);
+        }
     }
 }
 
@@ -513,140 +562,25 @@ function DetermineWhetherToSwitchDigits() {
 }
 
 function TimeToSwitchDigits() {
-    //Count seconds passed since digit presented
     var currentTime = new Date();
-    var ElapsedInMilliseconds = timeSinceLastDigitChange - currentTime;
-    var ElapsedInSeconds = ElapsedInMilliseconds/-1000.0;
+    var timeInBetweenInMilliseconds = currentTime - timeSinceLastDigitChange;
+    var timeInBetweenInSeconds = timeInBetweenInMilliseconds / 1000;
+    console.log(timeInBetweenInSeconds);
+    if (timeInBetweenInSeconds > timetogo ) {
+        //image(check, 0, window.innerHeight/2, window.innerWidth/2,window.innerHeight/2);
 
-    //Must meet an accuracy of 50% or 5 seconds pass
-    timewindow = TimeWidowForDigit(0)	//No time change just getting time window
-    console.log(ElapsedInSeconds);
-
-    //Which ever is first: digit is signed corrected or time widow has run out
-    if (m >= .50 || ElapsedInSeconds >= timewindow){ //CHANGED!!!!!!!!!
-        //If digit is signed correctly within timewindow
-        if (m >= .50 && ElapsedInSeconds <= timewindow){
-            //Shorten time widow
-            var changeTime = TimeWidowForDigit(-1);
-            console.log('Reduced');
-            console.log(changeTime);
-            //Correct ASL digit
-            currentCorrectSum[digitToShow] = currentCorrectSum[digitToShow] + 1
-            console.log(digitToShow + " " + currentCorrectSum[digitToShow])
-        } else if (ElapsedInSeconds >= timewindow) {
-            // Digit is NOT signed correctly within timewindow
-            var changeTime = TimeWidowForDigit(1);
-            console.log('Increased');
-            console.log(changeTime);
-            //Incorrect ASL digit
-            currentCorrectSum[digitToShow] = currentCorrectSum[digitToShow] + 0
-            console.log(digitToShow + " " + currentCorrectSum[digitToShow])
-        }
         timeSinceLastDigitChange = new Date();
-        timeWithDigit = false;
         return true;
+    } else {
+        return false;
     }
 }
 
-function TimeWidowForDigit(timechange){
-    if (digitToShow == 0){
-        if ((timeWindowPerDigit[0] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[0];
-        } else if ((timeWindowPerDigit[0] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[0];
-        } else {
-            timeWindowPerDigit[0] = timeWindowPerDigit[0] + timechange;
-            return timeWindowPerDigit[0];
-        }
-    } else if (digitToShow == 1){
-        if ((timeWindowPerDigit[1] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[1];
-        } else if ((timeWindowPerDigit[1] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[1];
-        } else {
-            timeWindowPerDigit[1] = timeWindowPerDigit[1] + timechange;
-            return timeWindowPerDigit[1];
-        }
-    } else if (digitToShow == 2){
-        if ((timeWindowPerDigit[2] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[2];
-        } else if ((timeWindowPerDigit[2] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[2];
-        } else {
-            timeWindowPerDigit[2] = timeWindowPerDigit[2] + timechange;
-            return timeWindowPerDigit[2];
-        }
-    }else if (digitToShow == 3){
-        if ((timeWindowPerDigit[3] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[3];
-        } else if ((timeWindowPerDigit[3] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[3];
-        } else {
-            timeWindowPerDigit[3] = timeWindowPerDigit[3] + timechange;
-            return timeWindowPerDigit[3];
-        }
-    }else if (digitToShow == 4){
-        if ((timeWindowPerDigit[4] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[4];
-        } else if ((timeWindowPerDigit[4] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[4];
-        } else {
-            timeWindowPerDigit[4] = timeWindowPerDigit[4] + timechange;
-            return timeWindowPerDigit[4];
-        }
-    }else if (digitToShow == 5){
-        if ((timeWindowPerDigit[5] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[5];
-        } else if ((timeWindowPerDigit[5] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[5];
-        } else {
-            timeWindowPerDigit[5] = timeWindowPerDigit[5] + timechange;
-            return timeWindowPerDigit[5];
-        }
-    }
-    else if (digitToShow == 6){
-        if ((timeWindowPerDigit[6] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[6];
-        } else if ((timeWindowPerDigit[6] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[6];
-        } else {
-            timeWindowPerDigit[6] = timeWindowPerDigit[6] + timechange;
-            return timeWindowPerDigit[6];
-        }
-    }else if (digitToShow == 7){
-        if ((timeWindowPerDigit[7] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[7];
-        } else if ((timeWindowPerDigit[7] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[7];
-        } else {
-            timeWindowPerDigit[7] = timeWindowPerDigit[7] + timechange;
-            return timeWindowPerDigit[7];
-        }
-    }else if (digitToShow == 8){
-        if ((timeWindowPerDigit[8] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[8];
-        } else if ((timeWindowPerDigit[8] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[8];
-        } else {
-            timeWindowPerDigit[8] = timeWindowPerDigit[8] + timechange;
-            return timeWindowPerDigit[8];
-        }
-    }else if (digitToShow == 9){
-        if ((timeWindowPerDigit[9] + timechange) < minTimeWindow){
-            return timeWindowPerDigit[9];
-        } else if ((timeWindowPerDigit[9] + timechange) > maxTimeWindow){
-            return timeWindowPerDigit[9];
-        } else {
-            timeWindowPerDigit[9] = timeWindowPerDigit[9] + timechange;
-            return timeWindowPerDigit[9];
-        }
-    }
 
-}
+
 
 function SwitchDigits(){
-    timesDigitTested[digitToShow] = timesDigitTested[digitToShow] + 1
-    console.log(digitToShow + " " + timesDigitTested[digitToShow])
+
     n=0
     var countchocula = 0;
     var nextnumberplease = digitToShow+1;
@@ -668,6 +602,7 @@ function SwitchDigits(){
                 countchocula = 0;
                 digitToShow = 0;
                 comebackto = [];
+                if ( startshowingonlynumbers = false){
                     numlist[0][1] = false;
                     numlist[1][1] = false;
                     numlist[2][1] = false;
@@ -678,22 +613,33 @@ function SwitchDigits(){
                     numlist[7][1] = false;
                     numlist[8][1] = false;
                     numlist[9][1] = false;
-
-
+                }
+                else if ( startshowingonlynumbers = true){
+                    numlist[0][1] = false;
+                    //numlist[1][1] = false;
+                    numlist[2][1] = false;
+                    numlist[3][1] = false;
+                    numlist[4][1] = false;
+                    // numlist[5][1] = false;
+                    //numlist[6][1] = false;
+                    numlist[7][1] = false;
+                    //numlist[8][1] = false;
+                    numlist[9][1] = false;
+                }
 
                 startshowingonlynumbers = true;
                 skip = true;
 
-                times[0] = 6;
-                times[1] = 6;
-                times[2] = 6;
-                times[3] = 6;
-                times[4] = 6;
-                times[5] = 6;
-                times[6] = 6;
-                times[7] = 6;
-                times[8] = 6;
-                times[9] = 6;
+                times[0] = 3;
+                times[1] = 3;
+                times[2] = 3;
+                times[3] = 3;
+                times[4] = 3;
+                times[5] = 3;
+                times[6] = 3;
+                times[7] = 3;
+                times[8] = 3;
+                times[9] = 3;
 
             }
             else{
@@ -714,7 +660,7 @@ function SwitchDigits(){
     if(skip == false){
         if(m >= 0.5){
             numlist[thisdigit][1] = true;
-            times[thisdigit] = times[thisdigit]-3;
+            //times[thisdigit] = times[thisdigit]-3;
         }
         else{
             comebackto.push(thisdigit);

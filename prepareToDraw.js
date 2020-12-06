@@ -41,6 +41,7 @@ var load
 var prepare;
 var check;
 var cross;
+var m0, m2, m3, m4, m7, m9;
 
 function setup() {
     createCanvas(window.innerWidth,window.innerHeight);
@@ -62,15 +63,21 @@ function setup() {
     n8 = loadImage('https://i.imgur.com/gcJPkTc.jpg');
     n9 = loadImage('https://i.imgur.com/98gdxBg.jpg');
     d0 = loadImage('https://i.imgur.com/NPdpsqQ.jpg');
+    m0 = loadImage('https://i.imgur.com/8rBlRAl.jpg');
     d1 = loadImage('https://i.imgur.com/YS1OugL.jpg');
     d2 = loadImage('https://i.imgur.com/b8vqFjP.jpg');
+    m2 = loadImage('https://i.imgur.com/5pkSWI8.jpg');
     d3 = loadImage('https://i.imgur.com/eN9XPge.jpg');
+    m3 = loadImage('https://i.imgur.com/BMVtmHW.jpg');
     d4 = loadImage('https://i.imgur.com/t8zq5tm.jpg');
+    m4 = loadImage('https://i.imgur.com/t4CSw9h.jpg');
     d5 = loadImage('https://i.imgur.com/MfAnYbH.jpg');
     d6 = loadImage('https://i.imgur.com/s1CQg1u.jpg');
     d7 = loadImage('https://i.imgur.com/fng77t5.jpg');
+    m7 = loadImage('https://i.imgur.com/uo1CmJr.jpg');
     d8 = loadImage('https://i.imgur.com/n16M8ct.jpg');
     d9 = loadImage('https://i.imgur.com/Evn0NXV.jpg');
+    m9 = loadImage('https://i.imgur.com/XFXgZm6.jpg');
     A = loadImage('https://i.imgur.com/Hje3VdQ.png');
     B = loadImage('https://i.imgur.com/ph4G1xX.png');
     C = loadImage('https://i.imgur.com/HwYIllF.png');
